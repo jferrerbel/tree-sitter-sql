@@ -2226,17 +2226,21 @@ module.exports = grammar({
     ),
 
     object_reference: $ => choice(
-      seq(
-        field('database', $.identifier),
-        '.',
-        field('schema', $.identifier),
-        '.',
-        field('name', $.identifier),
+      optional_backticks(
+        seq(
+          field('database', $.identifier),
+          '.',
+          field('schema', $.identifier),
+          '.',
+          field('name', $.identifier),
+        )
       ),
-      seq(
-        field('schema', $.identifier),
-        '.',
-        field('name', $.identifier),
+      optional_backticks(
+        seq(
+          field('schema', $.identifier),
+          '.',
+          field('name', $.identifier),
+        )
       ),
       field('name', $.identifier),
     ),
@@ -3603,7 +3607,7 @@ module.exports = grammar({
       $._identifier,
       $._double_quote_string,
       $._tsql_parameter,
-      seq("`", $._identifier, "`"),
+      wrapped_in_backticks($._identifier),
     ),
     _tsql_parameter: $ => seq('@', $._identifier),
     _identifier: _ => /[a-zA-Z_][0-9a-zA-Z_]*/,
@@ -3636,6 +3640,23 @@ function wrapped_in_parenthesis(node) {
     return seq("(", node, ")");
   }
   return seq("(", ")");
+}
+
+function optional_backticks(node) {
+  return prec.right(
+    choice(
+      node,
+      wrapped_in_backticks(node),
+    )
+  )
+}
+
+function wrapped_in_backticks(node) {
+  if (node) {
+    return seq("`", node, "`");
+  }
+
+  return seq("`", "`");
 }
 
 function parametric_type($, type, params = ['size']) {

@@ -7,6 +7,11 @@
 
 A general/permissive SQL grammar for [tree-sitter](https://github.com/tree-sitter/tree-sitter).
 
+## Generating a new version
+
+`tree-sitter generate`
+`tree-sitter build -w`
+
 ## Installation
 
 **We don't commit the generated parser files to the `main` branch.** Instead, you can find them on the
