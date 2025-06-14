@@ -922,15 +922,7 @@ module.exports = grammar({
       ),
     ),
 
-    select_expression: $ => seq(
-      $.term,
-      repeat(
-        seq(
-          ',',
-          $.term,
-        ),
-      ),
-    ),
+    select_expression: $ => comma_list_optional_trailing($.term),
 
     term: $ => seq(
       field(
@@ -3676,6 +3668,14 @@ function parametric_type($, type, params = ['size']) {
       ),
     ),
   )
+}
+
+function comma_list_optional_trailing(node) {
+  return seq(
+    node,
+    repeat(seq(',', node)),
+    optional(',')
+  );
 }
 
 function comma_list(field, requireFirst) {
